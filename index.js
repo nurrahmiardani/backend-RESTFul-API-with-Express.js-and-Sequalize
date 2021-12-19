@@ -2,9 +2,42 @@ const express = require("express")
 const app = express()
 const port = 3001
 const {tblhewan} = require("./models/index")
+const Sequelize = require("sequelize");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+const sequelize = new Sequelize(
+    "dbhewan",
+    "root",
+    "",
+    {
+      host: "localhost",
+      dialect: "mysql",
+    }
+  );
+  
+  // Step 3: Membuat fungsi untuk check koneksi project ke database
+  function checkConnection() {
+    sequelize
+      .authenticate()
+      .then(() => {
+        console.log(
+          "Connection has been established successfully"
+        );
+      })
+      .then(() => {
+        tblhewan.sync().then(() => {
+          console.log("Table Hewan created");
+        });
+      })
+      .catch((err) => {
+        console.error("Unable to connect to database: ", err);
+      });
+  }
+  
+  // Step 4: Panggil fungsi connection
+  checkConnection();
 
 app.post("/",(req,res)=>{
     res.json({message:"hello world"})
